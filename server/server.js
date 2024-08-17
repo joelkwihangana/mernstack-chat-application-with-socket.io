@@ -1,9 +1,11 @@
 import express from "express";
-import { chats } from "./data/data.js"; // Ensure the path is correct and ends with .js
+import { chats } from "./data/data.js";
+import dotenv from "dotenv";
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-app.listen(5000, () => console.log("Server is running on port 5000"));
+app.listen(PORT, () => console.log(`serever is running on port ${PORT}`));
 
 app.get("/", (req, res) => {
   res.send("API is running!");
