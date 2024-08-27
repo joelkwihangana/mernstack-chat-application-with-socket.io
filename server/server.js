@@ -1,9 +1,13 @@
 import express from "express";
 import { chats } from "./data/data.js";
-import dotenv from "dotenv";
+import cors from "cors";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Allow requests from all origins (not recommended for production)
+app.use(cors());
+app.use(express.json());
 
 app.listen(PORT, () => console.log(`serever is running on port ${PORT}`));
 
@@ -13,7 +17,7 @@ app.get("/", (req, res) => {
 
 //get all chats
 app.get("/api/chat", (req, res) => {
-  res.send(chats);
+  res.json(chats);
 });
 
 //get a specific chat by id
