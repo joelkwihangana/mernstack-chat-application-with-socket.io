@@ -1,6 +1,6 @@
 // src/server.ts
 import express, { Request, Response } from "express";
-import { chats, Chat } from "./data/data";
+import { chats, IChat } from "./data/data";
 import cors from "cors";
 
 const app = express();
