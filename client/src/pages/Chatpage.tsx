@@ -8,9 +8,9 @@ interface IChat {
   email: string;
 }
 
-interface ChatpageProps {}
+// interface ChatpageProps {}
 
-const Chatpage: React.FC<ChatpageProps> = () => {
+const Chatpage: React.FC = () => {
   const [chats, setChats] = useState<IChat[]>([]);
   const fetchChats = async () => {
     try {
