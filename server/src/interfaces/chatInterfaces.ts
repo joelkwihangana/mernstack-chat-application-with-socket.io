@@ -14,4 +14,5 @@ export interface IChat {
   users: IUser[];
   chatName: string;
   groupAdmin?: IGroupAdmin;
+  latestMessage?: string;
 }
