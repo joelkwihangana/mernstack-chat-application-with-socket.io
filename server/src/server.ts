@@ -2,9 +2,14 @@
 import express, { Request, Response } from "express";
 import { chats, IChat } from "./data/data";
 import cors from "cors";
+import connectToDatabase from "./config/db";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
+connectToDatabase();
 
 // Middleware
 app.use(cors());
