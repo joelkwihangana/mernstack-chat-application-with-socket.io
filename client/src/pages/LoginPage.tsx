@@ -27,7 +27,7 @@ const LoginPage = () => {
         w="100%"
       >
         <Text fontSize="4xl" color="black">
-          FCCP | Login Page
+          WELCOME TO FCCP
         </Text>
       </Box>
       <Box

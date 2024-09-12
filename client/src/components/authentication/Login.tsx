@@ -76,6 +76,21 @@ const Login: React.FC = () => {
         <Button mt={6} width="100%" colorScheme="blue" type="submit">
           Login
         </Button>
+        <Button
+          variant="solid"
+          colorScheme="orange"
+          width="100%"
+          onClick={() => {
+            setFormData((previousFormData) => ({
+              ...previousFormData,
+              email: "guest@example.com",
+              password: "guest123",
+            }));
+            console.log(formData);
+          }}
+        >
+          Get Guest User Credentials
+        </Button>
       </VStack>
     </form>
   );
