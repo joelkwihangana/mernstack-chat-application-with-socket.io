@@ -27,7 +27,7 @@ const LoginPage = () => {
         w="100%"
       >
         <Text fontSize="4xl" color="black">
-          WELCOME TO FCCP
+          FUN CLUB SUNRISE FC
         </Text>
       </Box>
       <Box

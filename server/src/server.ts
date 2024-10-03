@@ -5,6 +5,8 @@ import cors from "cors";
 import connectToDatabase from "./config/db";
 import dotenv from "dotenv";
 
+import userRoutes from "./routes/userRoutes";
+
 dotenv.config();
 
 const app = express();
@@ -34,6 +36,10 @@ app.get("/api/chat/:id", (req: Request, res: Response) => {
     res.status(404).json({ message: "Chat not found" });
   }
 });
+
+//User Authentication
+
+app.use("/api/user", userRoutes);
 
 // Start the server
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
