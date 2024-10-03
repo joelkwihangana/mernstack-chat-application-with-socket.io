@@ -15,7 +15,7 @@ connectToDatabase();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); //to accept json data
 
 // Routes
 app.get("/", (req: Request, res: Response) => {
