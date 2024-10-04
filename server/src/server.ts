@@ -6,6 +6,7 @@ import connectToDatabase from "./config/db";
 import dotenv from "dotenv";
 
 import userRoutes from "./routes/userRoutes";
+import { errorHandler, notFound } from "./middlewares/errorMiddlewares";
 
 dotenv.config();
 
@@ -40,6 +41,10 @@ app.get("/api/chat/:id", (req: Request, res: Response) => {
 //User Authentication
 
 app.use("/api/user", userRoutes);
+
+//middleware routes
+app.use(notFound);
+app.use(errorHandler);
 
 // Start the server
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
