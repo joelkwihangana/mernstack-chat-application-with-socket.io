@@ -4,56 +4,96 @@ import User from "../models/userModel";
 import bcryptjs from "bcryptjs";
 import { generateToken } from "../config/generateToken";
 
-// Define the expected structure of the request body
+// Define the expected structure of the request body for registration
 interface IRegisterRequestBody {
   name: string;
   email: string;
   password: string;
   pic?: string;
-  // _id?: string;
 }
 
-//register user
-const registerUser = expressAsyncHandler(
+// Register user controller
+export const registerUser = expressAsyncHandler(
   async (req: Request<{}, {}, IRegisterRequestBody>, res: Response) => {
     const { name, email, password, pic } = req.body;
-    //validate inputs
+
+    // Validate required fields
     if (!name || !email || !password) {
       res.status(400);
-      throw new Error("All fields are required");
+      throw new Error("All fields are required.");
     }
-    //check if user already exists
-    const userExists = await User.findOne({ email: email });
+
+    // Check if the user already exists
+    const userExists = await User.findOne({ email });
     if (userExists) {
       res.status(400);
-      throw new Error("Email already exists");
+      throw new Error("User with this email already exists.");
     }
-    //hash password
-    const hashedPassword = await bcryptjs.hash(password, 10);
-    //create new user
+
+    // Create a new user
     const user = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password, // Password hashing is handled in the model's pre-save middleware
       profilePicture: pic,
     });
-    //generate and send jwt token
+
+    // Send response with user data and JWT token
     if (user) {
-      // If user creation is successful, generate a JWT
-      const token = generateToken(user._id as any);
-      //send back the user information along with the token
-      res.json({
+      res.status(201).json({
         _id: user._id,
         name: user.name,
         email: user.email,
         pic: user.profilePicture,
-        token, // Send the JWT back to the client
+        token: generateToken(user._id.toString()), // Generate JWT token
       });
     } else {
       res.status(400);
-      throw new Error("Error creating user");
+      throw new Error("Failed to create the user.");
     }
   }
 );
 
-export default registerUser;
+// Define the expected structure of the request body for login
+interface ILoginRequestBody {
+  email: string;
+  password: string;
+}
+
+// Login user controller
+export const authUser = expressAsyncHandler(
+  async (req: Request<{}, {}, ILoginRequestBody>, res: Response) => {
+    const { email, password } = req.body;
+
+    // Validate required fields
+    if (!email || !password) {
+      res.status(400);
+      throw new Error("Both email and password are required.");
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log("Email not found in the database.");
+      res.status(401);
+      throw new Error("Invalid email or password.");
+    }
+
+    // Compare passwords
+    const isMatch = await bcryptjs.compare(password, user.password);
+    if (!isMatch) {
+      res.status(401);
+      throw new Error("Invalid email or password.");
+    }
+    console.log("Login successful!");
+
+    // Send response with user data and JWT token
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      pic: user.profilePicture,
+      token: generateToken(user._id.toString()), // Convert ObjectId to string
+    });
+  }
+);
