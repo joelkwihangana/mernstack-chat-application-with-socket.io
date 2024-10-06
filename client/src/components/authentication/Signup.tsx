@@ -12,6 +12,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { IFormData, IFormEventHandlers } from "../../interfaces/formInterface";
 import useCustomToast from "../../customHooks/useCustomToast";
+import { ERROR_MESSAGES } from "../../constants/errorMessages";
 const Signup: React.FC = () => {
   const navigate = useNavigate();
 
@@ -32,16 +33,6 @@ const Signup: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const { showToast } = useCustomToast();
-
-  // Constants for error messages
-  const ERROR_MESSAGES = {
-    EMPTY_FIELDS: "All fields are required.",
-    PASSWORD_MISMATCH: "Passwords do not match.",
-    UPLOAD_ERROR: "Failed to upload the image. Please try again.",
-    INVALID_FILE_TYPE: "Please select a valid image file (JPEG or PNG).",
-    CLOUDINARY_CONFIG_ERROR: "Cloudinary configuration is missing.",
-    SELECT_PICTURE: "Please select a picture.",
-  };
 
   // Event handlers
   const handleInputChange: IFormEventHandlers["handleInputChange"] = (e) => {
@@ -79,7 +70,7 @@ const Signup: React.FC = () => {
       const { name, email, password } = formData;
 
       const { data } = await axios.post(
-        `${backendUrl}/api/user/`,
+        `${backendUrl}/user/`,
         { name, email, password },
         config
       );

@@ -8,8 +8,15 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
+import { ERROR_MESSAGES } from "../../constants/errorMessages";
+import useCustomToast from "../../customHooks/useCustomToast";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login: React.FC = () => {
+  const { showToast } = useCustomToast();
+  const navigate = useNavigate();
+
   // Form data state
   const [formData, setFormData] = useState<{ email: string; password: string }>(
     {
@@ -18,8 +25,9 @@ const Login: React.FC = () => {
     }
   );
 
-  // State for show/hide password
+  // State for show/hide password and loading
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Handle input change
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,11 +38,56 @@ const Login: React.FC = () => {
     }));
   };
 
+  // Validate form inputs
+  const validateForm = () => {
+    const { email, password } = formData;
+    if (!email || !password) {
+      showToast("Error", ERROR_MESSAGES.EMPTY_FIELDS, "error");
+      return false;
+    }
+    return true;
+  };
+
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
-    // handle form submission logic here
+    setLoading(true);
+
+    const { email, password } = formData;
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+    if (!email || !password) {
+      showToast("Error", ERROR_MESSAGES.EMPTY_FIELDS, "error");
+      setLoading(false);
+      return;
+    }
+
+    console.log("Submitting login with:", { email, password });
+
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const { data } = await axios.post(
+        `${backendUrl}/user/login/`,
+        { email, password },
+        config
+      );
+
+      showToast("Success", "Login successful", "success");
+      localStorage.setItem("userInfo", JSON.stringify(data));
+      setLoading(false);
+      navigate("/chats");
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Login failed. Please try again.";
+      showToast("Error", message, "error");
+      console.error("Error logging in:", message, error);
+      setLoading(false);
+    }
   };
 
   return (
@@ -73,20 +126,25 @@ const Login: React.FC = () => {
           </InputGroup>
         </FormControl>
 
-        <Button mt={6} width="100%" colorScheme="blue" type="submit">
+        <Button
+          isLoading={loading}
+          mt={6}
+          width="100%"
+          colorScheme="blue"
+          type="submit"
+        >
           Login
         </Button>
+
         <Button
           variant="solid"
           colorScheme="orange"
           width="100%"
           onClick={() => {
-            setFormData((previousFormData) => ({
-              ...previousFormData,
+            setFormData({
               email: "guest@example.com",
               password: "guest123",
-            }));
-            console.log(formData);
+            });
           }}
         >
           Get Guest User Credentials

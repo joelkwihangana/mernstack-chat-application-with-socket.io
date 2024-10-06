@@ -11,11 +11,11 @@ import { errorHandler, notFound } from "./middlewares/errorMiddlewares";
 dotenv.config();
 
 const app = express();
+// Middleware
+app.use(cors());
 const PORT = process.env.PORT || 8000;
 connectToDatabase();
 
-// Middleware
-app.use(cors());
 app.use(express.json()); //to accept json data
 
 // Routes
