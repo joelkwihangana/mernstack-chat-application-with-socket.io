@@ -12,6 +12,8 @@ import { ERROR_MESSAGES } from "../../constants/errorMessages";
 import useCustomToast from "../../customHooks/useCustomToast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
+import { BACKEND_URL } from "../../config";
 
 const Login: React.FC = () => {
   const { showToast } = useCustomToast();
@@ -54,10 +56,9 @@ const Login: React.FC = () => {
     setLoading(true);
 
     const { email, password } = formData;
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const backendUrl = BACKEND_URL;
 
-    if (!email || !password) {
-      showToast("Error", ERROR_MESSAGES.EMPTY_FIELDS, "error");
+    if (!validateForm()) {
       setLoading(false);
       return;
     }
@@ -81,11 +82,13 @@ const Login: React.FC = () => {
       localStorage.setItem("userInfo", JSON.stringify(data));
       setLoading(false);
       navigate("/chats");
-    } catch (error: any) {
+    } catch (error) {
+      const axiosError = error as AxiosError;
       const message =
-        error.response?.data?.message || "an error occurred during login";
+        axiosError.response?.data?.message || "an error occurred during login";
       showToast("Error", message, "error");
       console.error("Error logging in:", message);
+    } finally {
       setLoading(false);
     }
   };
@@ -93,7 +96,7 @@ const Login: React.FC = () => {
   return (
     <form onSubmit={handleSubmit}>
       <VStack spacing="5px">
-        <FormControl isRequired mt={4}>
+        <FormControl mt={4}>
           <FormLabel>Email</FormLabel>
           <Input
             name="email"
@@ -104,7 +107,7 @@ const Login: React.FC = () => {
           />
         </FormControl>
 
-        <FormControl isRequired mt={4}>
+        <FormControl mt={4}>
           <FormLabel>Password</FormLabel>
           <InputGroup>
             <Input
