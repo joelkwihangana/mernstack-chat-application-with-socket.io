@@ -14,20 +14,23 @@ interface IRegisterRequestBody {
 
 // Register user controller
 export const registerUser = expressAsyncHandler(
-  async (req: Request<{}, {}, IRegisterRequestBody>, res: Response) => {
+  async (
+    req: Request<{}, {}, IRegisterRequestBody>,
+    res: Response
+  ): Promise<void> => {
     const { name, email, password, pic } = req.body;
 
     // Validate required fields
     if (!name || !email || !password) {
-      res.status(400);
-      throw new Error("All fields are required.");
+      res.status(400).json({ message: "All fields are required." });
+      return;
     }
 
     // Check if the user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
-      res.status(400);
-      throw new Error("User with this email already exists.");
+      res.status(400).json({ message: "User with this email already exists." });
+      return;
     }
 
     // Create a new user
@@ -48,8 +51,7 @@ export const registerUser = expressAsyncHandler(
         token: generateToken(user._id.toString()), // Generate JWT token
       });
     } else {
-      res.status(400);
-      throw new Error("Failed to create the user.");
+      res.status(400).json({ message: "Failed to create the user." });
     }
   }
 );
@@ -62,29 +64,33 @@ interface ILoginRequestBody {
 
 // Login user controller
 export const authUser = expressAsyncHandler(
-  async (req: Request<{}, {}, ILoginRequestBody>, res: Response) => {
+  async (
+    req: Request<{}, {}, ILoginRequestBody>,
+    res: Response
+  ): Promise<void> => {
     const { email, password } = req.body;
 
     // Validate required fields
     if (!email || !password) {
-      res.status(400);
-      throw new Error("Both email and password are required.");
+      res.status(400).json({ message: "Both email and password are required" });
+      return;
     }
 
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
       console.log("Email not found in the database.");
-      res.status(401);
-      throw new Error("Invalid email or password.");
+      res.status(401).json({ message: "Invalid email or password" });
+      return;
     }
 
     // Compare passwords
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) {
-      res.status(401);
-      throw new Error("Invalid email or password.");
+      res.status(401).json({ message: "Invalid email or password." });
+      return;
     }
+
     console.log("Login successful!");
 
     // Send response with user data and JWT token

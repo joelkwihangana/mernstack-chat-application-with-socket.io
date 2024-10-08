@@ -62,7 +62,7 @@ const Login: React.FC = () => {
       return;
     }
 
-    console.log("Submitting login with:", { email, password });
+    // console.log("Submitting login with:", { email, password });
 
     try {
       const config = {
@@ -81,11 +81,11 @@ const Login: React.FC = () => {
       localStorage.setItem("userInfo", JSON.stringify(data));
       setLoading(false);
       navigate("/chats");
-    } catch (error) {
+    } catch (error: any) {
       const message =
-        error.response?.data?.message || "Login failed. Please try again.";
+        error.response?.data?.message || "an error occurred during login";
       showToast("Error", message, "error");
-      console.error("Error logging in:", message, error);
+      console.error("Error logging in:", message);
       setLoading(false);
     }
   };
