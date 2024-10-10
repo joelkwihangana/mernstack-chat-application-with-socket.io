@@ -7,6 +7,10 @@ export interface IFormData {
   [key: string]: unknown; // Allows additional form fields
 }
 
+//interface for Error Response
+export interface IErrorResponse {
+  message: string;
+}
 // Interface for form state handlers
 export interface IFormStateHandlers {
   setName?: (name: string) => void;

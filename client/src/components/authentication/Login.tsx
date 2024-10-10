@@ -14,7 +14,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config";
-import { IFormData } from "../../interfaces/formInterface";
+import { IErrorResponse, IFormData } from "../../interfaces/formInterface";
 
 const Login: React.FC = () => {
   const { showToast } = useCustomToast();
@@ -77,9 +77,9 @@ const Login: React.FC = () => {
       setLoading(false);
       navigate("/chats");
     } catch (error) {
-      const axiosError = error as AxiosError;
-      const message =
-        axiosError.response?.data?.message || "an error occurred during login";
+      const Errormessage = "An error occured during login";
+      const axiosError = error as AxiosError<IErrorResponse>;
+      const message = axiosError.response?.data?.message || Errormessage;
       showToast("Error", message, "error");
       // console.error("Error logging in:", message);
     } finally {
