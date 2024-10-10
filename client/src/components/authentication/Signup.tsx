@@ -8,9 +8,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React, { useState, useRef } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
-import { IFormData, IFormEventHandlers } from "../../interfaces/formInterface";
+import {
+  IErrorResponse,
+  IFormData,
+  IFormEventHandlers,
+} from "../../interfaces/formInterface";
 import useCustomToast from "../../customHooks/useCustomToast";
 import { ERROR_MESSAGES } from "../../constants/errorMessages";
 const Signup: React.FC = () => {
@@ -79,8 +83,9 @@ const Signup: React.FC = () => {
       localStorage.setItem("userInfo", JSON.stringify(data));
       navigate("/chats");
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Failed to register user";
+      const staticError = "Failed to register user";
+      const Error = error as AxiosError<IErrorResponse>;
+      const errorMessage = Error.response?.data?.message || staticError;
       showToast("Error", errorMessage, "error");
     } finally {
       setLoading(false);
