@@ -14,20 +14,17 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 import { BACKEND_URL } from "../../config";
+import { IFormData } from "../../interfaces/formInterface";
 
 const Login: React.FC = () => {
   const { showToast } = useCustomToast();
   const navigate = useNavigate();
 
   // Form data state
-  const [formData, setFormData] = useState<{ email: string; password: string }>(
-    {
-      email: "",
-      password: "",
-    }
-  );
-
-  // State for show/hide password and loading
+  const [formData, setFormData] = useState<IFormData>({
+    email: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -62,9 +59,6 @@ const Login: React.FC = () => {
       setLoading(false);
       return;
     }
-
-    // console.log("Submitting login with:", { email, password });
-
     try {
       const config = {
         headers: {
@@ -87,7 +81,7 @@ const Login: React.FC = () => {
       const message =
         axiosError.response?.data?.message || "an error occurred during login";
       showToast("Error", message, "error");
-      console.error("Error logging in:", message);
+      // console.error("Error logging in:", message);
     } finally {
       setLoading(false);
     }
