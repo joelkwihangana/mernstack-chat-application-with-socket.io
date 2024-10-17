@@ -3,6 +3,7 @@ export interface IUser {
   email: string;
   password: string;
   profilePicture?: string;
+  message?: string;
 }
 
 export interface IGroupAdmin {

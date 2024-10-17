@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import User from "../models/userModel";
 import bcryptjs from "bcryptjs";
 import { generateToken } from "../config/generateToken";
+import { Interface } from "readline";
+import { IUser } from "../interfaces/chatInterfaces";
 
 // Define the expected structure of the request body for registration
 interface IRegisterRequestBody {
@@ -10,6 +12,11 @@ interface IRegisterRequestBody {
   email: string;
   password: string;
   pic?: string;
+}
+//interface IRegisterResponse
+interface IGetUsersResponse {
+  users?: IUser[]; // Optional property for the array of users
+  message?: string; // Optional property for an error message
 }
 
 // Register user controller
@@ -101,5 +108,31 @@ export const authUser = expressAsyncHandler(
       pic: user.profilePicture,
       token: generateToken(user._id.toString()), // Convert ObjectId to string
     });
+  }
+);
+
+// Get all users or search users by name or email
+export const getUsersController = expressAsyncHandler(
+  async (req: Request, res: Response<IGetUsersResponse>): Promise<void> => {
+    const { name, email } = req.query; // Get search parameters from query string
+    console.log("Query params:", req.query);
+    //create Filter Object for MongoDB
+    const searchFilter: any = {};
+    if (name) {
+      searchFilter.name = { $regex: name, $options: "i" }; //Case insensitive for name
+    }
+    if (email) {
+      searchFilter.email = { $regex: email, $options: "i" }; //Case insensitive for email
+    }
+    const users = await User.find(searchFilter); // fetch users based on the search filter
+
+    //check if user(s) exist
+    if (users.length === 0) {
+      console.log("No users found with the given criteria.");
+      res.status(404).json({ message: "No users found." });
+      return;
+    }
+
+    res.status(200).json({ users }); //Send response with the filtered users data
   }
 );
